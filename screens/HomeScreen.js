@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Button, Text, Alert, ActivityIndicator } from 'react-native';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { View, Text, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { postAPI } from '../api/ApiService';
+import CommonStyles from '../styles/CommonStyles';
+import CustomTextInput from '../styles/CustomTextInput';
 
 export const HomeScreen = ({ navigation }) => {
   const [employeeName, setEmployeeName] = useState('');
@@ -68,96 +69,42 @@ export const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>POST Request API Call</Text>
+    <View style={CommonStyles.container}>
+      <Text style={CommonStyles.header}>POST Request API Call</Text>
 
-      <View style={styles.inputContainer}>
-        <FontAwesome5 name="user" size={20} color="black" style={styles.icon} />
-        <TextInput
-          placeholder="Employee Name"
-          style={[styles.input, employeeNameError ? styles.inputError : null]}
-          value={employeeName}
-          onChangeText={setEmployeeName}
-        />
-      </View>
-      {employeeNameError ? <Text style={styles.errorText}>{employeeNameError}</Text> : null}
+      <CustomTextInput
+        iconName="user"
+        placeholder="Employee Name"
+        value={employeeName}
+        onChangeText={setEmployeeName}
+      />
+      {employeeNameError ? <Text style={CommonStyles.errorText}>{employeeNameError}</Text> : null}
 
-      <View style={styles.inputContainer}>
-        <FontAwesome5 name="briefcase" size={20} color="black" style={styles.icon} />
-        <TextInput
-          placeholder="Job Designation"
-          style={[styles.input, jobDesignationError ? styles.inputError : null]}
-          value={jobDesignation}
-          onChangeText={setJobDesignation}
-        />
-      </View>
-      {jobDesignationError ? <Text style={styles.errorText}>{jobDesignationError}</Text> : null}
+      <CustomTextInput
+        iconName="briefcase"
+        placeholder="Job Designation"
+        value={jobDesignation}
+        onChangeText={setJobDesignation}
+      />
+      {jobDesignationError ? <Text style={CommonStyles.errorText}>{jobDesignationError}</Text> : null}
 
-      <View style={styles.inputContainer}>
-        <FontAwesome5 name="building" size={20} color="black" style={styles.icon} />
-        <TextInput
-          placeholder="Company"
-          style={[styles.input, companyNameError ? styles.inputError : null]}
-          value={companyName}
-          onChangeText={setCompanyName}
-        />
-      </View>
-      {companyNameError ? <Text style={styles.errorText}>{companyNameError}</Text> : null}
+      <CustomTextInput
+        iconName="building"
+        placeholder="Company"
+        value={companyName}
+        onChangeText={setCompanyName}
+      />
+      {companyNameError ? <Text style={CommonStyles.errorText}>{companyNameError}</Text> : null}
 
       {isLoading ? (
         <ActivityIndicator size="large" color="#007BFF" />
       ) : (
-        <Button
-          title="POST"
-          onPress={handlePost}
-          color="#007BFF"
-          style={styles.button}
-        />
+        <TouchableOpacity onPress={handlePost} style={CommonStyles.button}>
+          <Text style={CommonStyles.buttonText}>Post</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: 'white',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color:'black',
-    marginBottom: 20,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    paddingHorizontal: 10,
-  },
-  inputError: {
-    borderColor: 'red',
-  },
-  icon: {
-    paddingHorizontal: 10,
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
-  },
-  button: {
-    marginTop: 20,
-  },
-});
 
-export default HomeScreen;

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Button, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { getAPI, putAPI } from '../api/ApiService';
+import CommonStyles from '../styles/CommonStyles';
+import CustomTextInput from '../styles/CustomTextInput';
 
 const PasswordUpdateScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -12,7 +14,7 @@ const PasswordUpdateScreen = ({ navigation }) => {
     const [confirmNewPasswordError, setConfirmNewPasswordError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfrimNewPassword, setShowConfirmNewPassword] = useState(false); 
+    const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,7 +43,7 @@ const PasswordUpdateScreen = ({ navigation }) => {
             setNewPasswordError('New password is required');
             valid = false;
         } else if (newPassword.trim().length < 6) {
-            setNewPasswordError('New Password must have at least 6 characters');
+            setNewPasswordError('New password must have at least 6 characters');
             valid = false;
         }
 
@@ -95,116 +97,59 @@ const PasswordUpdateScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Update Password</Text>
+        <View style={CommonStyles.container}>
+            <Text style={CommonStyles.header}>Update Password</Text>
 
-            <View style={styles.inputContainer}>
-                <FontAwesome5 name="envelope" size={20} color="black" style={styles.icon} />
-                <TextInput
-                    placeholder="Email ID"
-                    style={[styles.input, emailError ? styles.inputError : null]}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                />
-            </View>
-            {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+            <CustomTextInput
+                iconName="envelope"
+                placeholder="Email ID"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+            />
+            {emailError ? <Text style={CommonStyles.errorText}>{emailError}</Text> : null}
 
-            <View style={styles.inputContainer}>
-                <FontAwesome5 name="lock" size={20} color="black" style={styles.icon} />
-                <TextInput
-                    placeholder="New Password"
-                    style={[styles.input, newPasswordError ? styles.inputError : null]}
-                    value={newPassword}
-                    onChangeText={setNewPassword}
-                    secureTextEntry={!showNewPassword} // Toggle password visibility
-                />
-                <TouchableOpacity onPress={() => setShowNewPassword(prev => !prev)} style={styles.eyeIcon}>
-                    <FontAwesome5 name={showNewPassword ? "eye-slash" : "eye"} size={20} color="black" />
-                </TouchableOpacity>
-            </View>
-            {newPasswordError ? <Text style={styles.errorText}>{newPasswordError}</Text> : null}
+            <CustomTextInput
+                iconName="lock"
+                placeholder="New Password"
+                value={newPassword}
+                onChangeText={setNewPassword}
+                secureTextEntry={!showNewPassword}
+                rightIcon={
+                    <TouchableOpacity onPress={() => setShowNewPassword(prev => !prev)} style={CommonStyles.eyeIcon}>
+                        <FontAwesome5 name={showNewPassword ? "eye-slash" : "eye"} size={20} color="black" />
+                    </TouchableOpacity>
+                }
+            />
+            {newPasswordError ? <Text style={CommonStyles.errorText}>{newPasswordError}</Text> : null}
 
-            <View style={styles.inputContainer}>
-                <FontAwesome5 name="lock" size={20} color="black" style={styles.icon} />
-                <TextInput
-                    placeholder="Confirm New Password"
-                    style={[styles.input, confirmNewPasswordError ? styles.inputError : null]}
-                    value={confirmNewPassword}
-                    onChangeText={setConfirmNewPassword}
-                    secureTextEntry={!showConfrimNewPassword} // Toggle password visibility
-                />
-                <TouchableOpacity onPress={() => setShowConfirmNewPassword(prev => !prev)} style={styles.eyeIcon}>
-                    <FontAwesome5 name={showConfrimNewPassword ? "eye-slash" : "eye"} size={20} color="black" />
-                </TouchableOpacity>
-            </View>
-            {confirmNewPasswordError ? <Text style={styles.errorText}>{confirmNewPasswordError}</Text> : null}
+            <CustomTextInput
+                iconName="lock"
+                placeholder="Confirm New Password"
+                value={confirmNewPassword}
+                onChangeText={setConfirmNewPassword}
+                secureTextEntry={!showConfirmNewPassword}
+                rightIcon={
+                    <TouchableOpacity onPress={() => setShowConfirmNewPassword(prev => !prev)} style={CommonStyles.eyeIcon}>
+                        <FontAwesome5 name={showConfirmNewPassword ? "eye-slash" : "eye"} size={20} color="black" />
+                    </TouchableOpacity>
+                }
+            />
+            {confirmNewPasswordError ? <Text style={CommonStyles.errorText}>{confirmNewPasswordError}</Text> : null}
 
             {isLoading ? (
                 <ActivityIndicator size="large" color="#007BFF" />
             ) : (
-                <Button
-                    title="Update Password"
-                    onPress={handleUpdatePassword}
-                    color="#007BFF"
-                    style={styles.button}
-                />
+                <TouchableOpacity onPress={handleUpdatePassword} style={CommonStyles.button}>
+                    <Text style={CommonStyles.buttonText}>Update Password</Text>
+                </TouchableOpacity>
             )}
 
             <TouchableOpacity onPress={() => navigation.navigate('Login Screen')}>
-                <Text style={styles.loginText}>Back to Log In</Text>
+                <Text style={CommonStyles.navigationText}>Back to Log In</Text>
             </TouchableOpacity>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: 'white',
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: 'gray',
-        borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 15,
-    },
-    input: {
-        flex: 1,
-        height: 40,
-        paddingHorizontal: 10,
-    },
-    inputError: {
-        borderColor: 'red',
-    },
-    icon: {
-        paddingHorizontal: 10,
-    },
-    eyeIcon: {
-        paddingHorizontal: 10,
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 10,
-    },
-    button: {
-        marginTop: 20,
-    },
-    loginText: {
-        textAlign: 'center',
-        marginTop: 20,
-        color: '#007BFF',
-    },
-});
 
 export default PasswordUpdateScreen;

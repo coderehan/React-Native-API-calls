@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert, TextInput, Button, Text, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, Alert, Text, ActivityIndicator } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { postAPI } from '../api/ApiService';
+import CommonStyles from '../styles/CommonStyles';
+import CustomTextInput from '../styles/CustomTextInput';
 
 const SignUpScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -11,7 +13,7 @@ const SignUpScreen = ({ navigation }) => {
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+    const [showPassword, setShowPassword] = useState(false);
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,18 +23,15 @@ const SignUpScreen = ({ navigation }) => {
     const handleSignUp = async () => {
         let valid = true;
 
-        // Reset error messages
         setUsernameError('');
         setEmailError('');
         setPasswordError('');
 
-        // Validate username
         if (username.trim().length === 0) {
             setUsernameError('Username is required');
             valid = false;
         }
 
-        // Validate email
         if (email.trim().length === 0) {
             setEmailError('Email is required');
             valid = false;
@@ -41,7 +40,6 @@ const SignUpScreen = ({ navigation }) => {
             valid = false;
         }
 
-        // Validate password
         if (password.trim().length === 0) {
             setPasswordError('Password is required');
             valid = false;
@@ -52,22 +50,20 @@ const SignUpScreen = ({ navigation }) => {
 
         if (valid) {
             try {
-                setIsLoading(true); // Show loading indicator
+                setIsLoading(true);
 
                 const endpoint = "/users";
                 const body = { username, email, password };
 
-                // Call the API service to perform POST request
                 const result = await postAPI(endpoint, body);
 
                 if (result) {
                     console.log("User created successfully:", result);
                     Alert.alert("Success", "User created successfully");
-                    // Clear form fields
                     setUsername('');
                     setEmail('');
                     setPassword('');
-                    navigation.navigate('Login Screen'); // Navigate to Login Screen after successful signup
+                    navigation.navigate('Login Screen');
                 } else {
                     console.warn("Failed to create user:", result);
                     Alert.alert("Error", "Failed to create user");
@@ -76,119 +72,59 @@ const SignUpScreen = ({ navigation }) => {
                 console.error("Error creating user:", error);
                 Alert.alert("Error", "An error occurred during signup");
             } finally {
-                setIsLoading(false); // Hide loading indicator
+                setIsLoading(false);
             }
         }
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Sign Up</Text>
+        <View style={CommonStyles.container}>
+            <Text style={CommonStyles.header}>Sign Up</Text>
 
-            <View style={styles.inputContainer}>
-                <FontAwesome5 name="user" size={20} color="black" style={styles.icon} />
-                <TextInput
-                    placeholder="Username"
-                    style={[styles.input, usernameError ? styles.inputError : null]}
-                    value={username}
-                    onChangeText={setUsername}
-                />
-            </View>
-            {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+            <CustomTextInput
+                iconName="user"
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
+            />
+            {usernameError ? <Text style={CommonStyles.errorText}>{usernameError}</Text> : null}
 
-            <View style={styles.inputContainer}>
-                <FontAwesome5 name="envelope" size={20} color="black" style={styles.icon} />
-                <TextInput
-                    placeholder="Email ID"
-                    style={[styles.input, emailError ? styles.inputError : null]}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                />
-            </View>
-            {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+            <CustomTextInput
+                iconName="envelope"
+                placeholder="Email ID"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+            />
+            {emailError ? <Text style={CommonStyles.errorText}>{emailError}</Text> : null}
 
-            <View style={styles.inputContainer}>
-                <FontAwesome5 name="lock" size={20} color="black" style={styles.icon} />
-                <TextInput
-                    placeholder="Password"
-                    style={[styles.input, passwordError ? styles.inputError : null]}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword} // Toggle password visibility
-                />
-                <TouchableOpacity onPress={() => setShowPassword(prev => !prev)} style={styles.eyeIcon}>
-                    <FontAwesome5 name={showPassword ? "eye-slash" : "eye"} size={20} color="black" />
-                </TouchableOpacity>
-            </View>
-
-            {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+            <CustomTextInput
+                iconName="lock"
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                rightIcon={
+                    <TouchableOpacity onPress={() => setShowPassword(prev => !prev)} style={CommonStyles.eyeIcon}>
+                        <FontAwesome5 name={showPassword ? "eye-slash" : "eye"} size={20} color="black" />
+                    </TouchableOpacity>
+                }
+            />
+            {passwordError ? <Text style={CommonStyles.errorText}>{passwordError}</Text> : null}
 
             {isLoading ? (
                 <ActivityIndicator size="large" color="#007BFF" />
             ) : (
-                <Button
-                    title="Signup"
-                    onPress={handleSignUp}
-                    color="#007BFF"
-                    style={styles.button}
-                />
+                <TouchableOpacity onPress={handleSignUp} style={CommonStyles.button}>
+                    <Text style={CommonStyles.buttonText}>Signup</Text>
+                </TouchableOpacity>
             )}
 
             <TouchableOpacity onPress={() => navigation.navigate('Login Screen')}>
-                <Text style={styles.loginText}>Already have an account? Log in</Text>
+                <Text style={CommonStyles.navigationText}>Already have an account? Log in</Text>
             </TouchableOpacity>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: 'white',
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: 'gray',
-        borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 15,
-    },
-    input: {
-        flex: 1,
-        height: 40,
-        paddingHorizontal: 10,
-    },
-    inputError: {
-        borderColor: 'red',
-    },
-    icon: {
-        paddingHorizontal: 10,
-    },
-    eyeIcon: {
-        paddingHorizontal: 10,
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 10,
-    },
-    loginText: {
-        textAlign: 'center',
-        marginTop: 20,
-        color: '#007BFF',
-    },
-    button: {
-        marginTop: 20,
-    },
-});
 
 export default SignUpScreen;

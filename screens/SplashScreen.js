@@ -14,7 +14,7 @@ const SplashScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Image
-                source={require('../assets/images/image_reactnative.png')} 
+                source={require('../assets/images/react_native_image.png')} 
                 style={styles.image}
             />
             <Text style={styles.text}>Welcome to React Native App!</Text>

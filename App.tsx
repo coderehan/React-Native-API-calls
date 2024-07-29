@@ -1,15 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { StackNavigator } from "./navigation/StackNavigator";
+import { AuthenticationStackNavigator, HomeStackNavigator } from "./navigation/StackNavigator";
+import { AppProvider, AppContext } from "./AppContext"; // Adjust the path as needed
 
 const App = () => {
-  return (
+  // Use context to determine which navigator to show
+  const { user } = useContext(AppContext);
 
-    <NavigationContainer>
-      <StackNavigator />
-    </NavigationContainer>
+  return (
+    <AppProvider>
+      <NavigationContainer>
+        {user ? <HomeStackNavigator /> : <AuthenticationStackNavigator />}
+      </NavigationContainer>
+    </AppProvider>
   );
 };
-
 
 export default App;

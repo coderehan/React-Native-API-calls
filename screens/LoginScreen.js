@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Button, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { getAPI } from '../api/ApiService';
+import CommonStyles from '../styles/CommonStyles';
+import CustomTextInput from '../styles/CustomTextInput';
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -70,105 +72,49 @@ const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Log In</Text>
+        <View style={CommonStyles.container}>
+            <Text style={CommonStyles.header}>Login</Text>
 
-            <View style={styles.inputContainer}>
-                <FontAwesome5 name="envelope" size={20} color="black" style={styles.icon} />
-                <TextInput
-                    placeholder="Email ID"
-                    style={[styles.input, emailError ? styles.inputError : null]}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                />
-            </View>
-            {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+            <CustomTextInput
+                iconName="envelope"
+                placeholder="Email ID"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+            />
+            {emailError ? <Text style={CommonStyles.errorText}>{emailError}</Text> : null}
 
-            <View style={styles.inputContainer}>
-                <FontAwesome5 name="lock" size={20} color="black" style={styles.icon} />
-                <TextInput
-                    placeholder="Password"
-                    style={[styles.input, passwordError ? styles.inputError : null]}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword} // Toggle password visibility
-                />
-                <TouchableOpacity onPress={() => setShowPassword(prev => !prev)} style={styles.eyeIcon}>
-                    <FontAwesome5 name={showPassword ? "eye-slash" : "eye"} size={20} color="black" />
-                </TouchableOpacity>
-            </View>
-            {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+            <CustomTextInput
+                iconName="lock"
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                rightIcon={
+                    <TouchableOpacity onPress={() => setShowPassword(prev => !prev)} style={CommonStyles.eyeIcon}>
+                        <FontAwesome5 name={showPassword ? "eye-slash" : "eye"} size={20} color="black" />
+                    </TouchableOpacity>
+                }
+            />
+            {passwordError ? <Text style={CommonStyles.errorText}>{passwordError}</Text> : null}
 
             {isLoading ? (
                 <ActivityIndicator size="large" color="#007BFF" />
             ) : (
-                <Button
-                    title="Login"
-                    onPress={handleLogin}
-                    color="#007BFF"
-                    style={styles.button}
-                />
+                <TouchableOpacity onPress={handleLogin} style={CommonStyles.button}>
+                    <Text style={CommonStyles.buttonText}>Login</Text>
+                </TouchableOpacity>
             )}
 
             <TouchableOpacity onPress={() => navigation.navigate('SignUp Screen')}>
-                <Text style={styles.signUpText}>Don't have an account? Sign up</Text>
+                <Text style={CommonStyles.navigationText}>Don't have an account? Sign up</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate('Password Update Screen')}>
-                <Text style={styles.signUpText}>Forgot Password?</Text>
+                <Text style={CommonStyles.navigationText}>Forgot Password?</Text>
             </TouchableOpacity>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: 'white',
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: 'gray',
-        borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 15,
-    },
-    input: {
-        flex: 1,
-        height: 40,
-        paddingHorizontal: 10,
-    },
-    inputError: {
-        borderColor: 'red',
-    },
-    icon: {
-        paddingHorizontal: 10,
-    },
-    eyeIcon: {
-        paddingHorizontal: 10,
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 10,
-    },
-    button: {
-        marginTop: 20,
-    },
-    signUpText: {
-        textAlign: 'center',
-        marginTop: 20,
-        color: '#007BFF',
-    },
-});
 
 export default LoginScreen;
