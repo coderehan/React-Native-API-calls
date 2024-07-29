@@ -5,8 +5,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 const SplashScreen = ({ navigation }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
-            // Navigate to the desired screen after 3 seconds
-            navigation.replace('Login Screen'); // or any initial screen you prefer
+            navigation.replace('Login Screen'); 
         }, 3000);
 
         return () => clearTimeout(timer); // Cleanup the timer on component unmount
