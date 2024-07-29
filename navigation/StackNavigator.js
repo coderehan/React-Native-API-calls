@@ -9,23 +9,17 @@ import SplashScreen from "../screens/SplashScreen";
 
 const Stack = createStackNavigator();
 
-export const AuthenticationStackNavigator = () => {
+export const StackNavigator = () => {
 
   return (
-    <Stack.Navigator initialRouteName={'Splash Screen'}>
-      <Stack.Screen name="Splash Screen" component={SplashScreen} options={{ headerShown: false }} />
+    <Stack.Navigator initialRouteName={'Login Screen'}>
+      <Stack.Screen name="Splash Screen" component={SplashScreen} options={{ headerShown: false }} /> 
       <Stack.Screen name="Login Screen" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp Screen" component={SignupScreen} />
       <Stack.Screen name="Password Update Screen" component={PasswordUpdateScreen} />
-    </Stack.Navigator>
-  );
-};
-
-export const HomeStackNavigator = () => {
-
-  return (
-    <Stack.Navigator initialRouteName={'Splash Screen'}>
       <Stack.Screen name="Home Screen" component={BottomTabNavigator} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
+
+
