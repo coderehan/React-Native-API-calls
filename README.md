@@ -7,6 +7,7 @@
 4. Home Screen <br>
 5. List Screen <br>
 6. Profile Screen <br>
+7. Splash Screen<br>
 
 <h3>Dependencies Used:</h3>
 1. Stack Navigation <br>
