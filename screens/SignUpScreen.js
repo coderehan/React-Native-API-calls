@@ -5,6 +5,7 @@ import { postAPI } from '../api/ApiService';
 import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
 import { AuthContext } from '../AuthContext';
+import CustomButton from '../styles/CustomButton';
 
 const SignUpScreen = ({ navigation }) => {
     const { login } = useContext(AuthContext); // Use the context
@@ -121,9 +122,7 @@ const SignUpScreen = ({ navigation }) => {
             {isLoading ? (
                 <ActivityIndicator size="large" color="#007BFF" />
             ) : (
-                <TouchableOpacity onPress={handleSignUp} style={CommonStyles.button}>
-                    <Text style={CommonStyles.buttonText}>Signup</Text>
-                </TouchableOpacity>
+                <CustomButton onPress={handleSignUp} title="Signup" />
             )}
 
             <TouchableOpacity onPress={() => navigation.navigate('Login Screen')}>

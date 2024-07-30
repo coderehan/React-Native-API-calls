@@ -5,6 +5,7 @@ import { getAPI, putAPI } from '../api/ApiService';
 import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
 import { AuthContext } from '../AuthContext'; // Import AuthContext
+import CustomButton from '../styles/CustomButton';
 
 const PasswordUpdateScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -148,9 +149,7 @@ const PasswordUpdateScreen = ({ navigation }) => {
             {isLoading ? (
                 <ActivityIndicator size="large" color="#007BFF" />
             ) : (
-                <TouchableOpacity onPress={handleUpdatePassword} style={CommonStyles.button}>
-                    <Text style={CommonStyles.buttonText}>Update Password</Text>
-                </TouchableOpacity>
+                <CustomButton onPress={handleUpdatePassword} title="Update Password" />
             )}
 
             <TouchableOpacity onPress={() => navigation.navigate('Login Screen')}>

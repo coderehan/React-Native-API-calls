@@ -4,6 +4,7 @@ import { postAPI } from '../api/ApiService';
 import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
 import { AuthContext } from '../AuthContext'; // Import AuthContext
+import CustomButton from '../styles/CustomButton';
 
 export const HomeScreen = ({ navigation }) => {
   const [employeeName, setEmployeeName] = useState('');
@@ -110,9 +111,7 @@ export const HomeScreen = ({ navigation }) => {
       {isLoading ? (
         <ActivityIndicator size="large" color="#007BFF" />
       ) : (
-        <TouchableOpacity onPress={handlePost} style={CommonStyles.button}>
-          <Text style={CommonStyles.buttonText}>Post</Text>
-        </TouchableOpacity>
+        <CustomButton onPress={handlePost} title="Post" />
       )}
     </View>
   );

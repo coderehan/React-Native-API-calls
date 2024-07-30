@@ -6,6 +6,7 @@ import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
 import { AuthContext } from '../AuthContext'; // Import the context
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomButton from '../styles/CustomButton';
 
 const LoginScreen = ({ navigation }) => {
     const { login } = useContext(AuthContext); // Use the context
@@ -109,9 +110,7 @@ const LoginScreen = ({ navigation }) => {
             {isLoading ? (
                 <ActivityIndicator size="large" color="#007BFF" />
             ) : (
-                <TouchableOpacity onPress={handleLogin} style={CommonStyles.button}>
-                    <Text style={CommonStyles.buttonText}>Login</Text>
-                </TouchableOpacity>
+                <CustomButton onPress={handleLogin} title="Login" />
             )}
 
             <TouchableOpacity onPress={() => navigation.navigate('SignUp Screen')}>
