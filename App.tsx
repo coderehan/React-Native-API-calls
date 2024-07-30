@@ -5,13 +5,15 @@ import { AuthenticationStackNavigator, HomeStackNavigator } from './navigation/S
 import { AuthContext, AuthProvider } from './AuthContext';
 
 const AppContent = () => {
-  const { user } = useContext(AuthContext); // Use context inside a component wrapped with AuthProvider
-  const [isLoading, setIsLoading] = useState(true); // Track loading state
+  // Use the AuthContext to get the current user
+  const { user } = useContext(AuthContext);
+  // State to track loading status
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Context should already handle authentication status
+    // Effect to handle the loading state based on user context
     setIsLoading(false); // Set loading to false once context is loaded
-  }, [user]); // Depend on user context
+  }, [user]); // Run this effect when 'user' changes
 
   if (isLoading) {
     // Show a loading indicator while checking login status
@@ -23,11 +25,12 @@ const AppContent = () => {
   }
 
   return (
+    // Conditionally render the stack navigator based on the user's authentication status
     <NavigationContainer>
       {user ? (
-        <HomeStackNavigator />
+        <HomeStackNavigator /> // Show home stack if user is authenticated
       ) : (
-        <AuthenticationStackNavigator />
+        <AuthenticationStackNavigator /> // Show authentication stack if user is not authenticated
       )}
     </NavigationContainer>
   );
@@ -35,6 +38,7 @@ const AppContent = () => {
 
 const App = () => {
   return (
+    // Wrap the app content with the AuthProvider to provide authentication context
     <AuthProvider>
       <AppContent />
     </AuthProvider>

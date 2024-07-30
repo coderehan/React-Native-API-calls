@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomButton from '../styles/CustomButton';
 
 const LoginScreen = ({ navigation }) => {
-    const { login } = useContext(AuthContext); // Use the context
+    const { login } = useContext(AuthContext); // is using object destructuring to extract the login function from the context value returned by useContext(AuthContext). This means that login is now a function that can be used directly within the component to log in a user.
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
@@ -60,7 +60,7 @@ const LoginScreen = ({ navigation }) => {
                     await AsyncStorage.setItem('userName', user.username); // persistent userName
                     console.log('userId stored in AsyncStorage:', user.id);
 
-                    login(user); // Update context state
+                    login(user); // Call the login function with user data
 
                     setEmail('');
                     setPassword('');

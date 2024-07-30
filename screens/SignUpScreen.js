@@ -64,7 +64,6 @@ const SignUpScreen = ({ navigation }) => {
                     console.log("User created successfully:", result);
                     Alert.alert("Success", "User created successfully");
 
-                    // Log in the user automatically after sign up
                     login(result);
 
                     setUsername('');
