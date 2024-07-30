@@ -12,7 +12,7 @@ const CommonStyles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 20,
-        color:'black'
+        color: 'black'
     },
     inputContainer: {
         flexDirection: 'row',
@@ -58,7 +58,14 @@ const CommonStyles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         textTransform: 'uppercase',
-    }
+    },
+    userInfoText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333', 
+        marginBottom: 20,
+        textAlign: 'center', 
+    },
 });
 
 export default CommonStyles;

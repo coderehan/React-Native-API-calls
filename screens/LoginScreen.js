@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { getAPI } from '../api/ApiService';
 import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
+import { AuthContext } from '../AuthContext'; // Import the context
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
+    const { login } = useContext(AuthContext); // Use the context
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+    const [showPassword, setShowPassword] = useState(false);
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,11 +24,9 @@ const LoginScreen = ({ navigation }) => {
     const handleLogin = async () => {
         let valid = true;
 
-        // Reset error messages
         setEmailError('');
         setPasswordError('');
 
-        // Validate email
         if (email.trim().length === 0) {
             setEmailError('Email is required');
             valid = false;
@@ -34,7 +35,6 @@ const LoginScreen = ({ navigation }) => {
             valid = false;
         }
 
-        // Validate password
         if (password.trim().length === 0) {
             setPasswordError('Password is required');
             valid = false;
@@ -45,20 +45,28 @@ const LoginScreen = ({ navigation }) => {
 
         if (valid) {
             try {
-                setIsLoading(true); // Show loading indicator
+                setIsLoading(true);
 
-                const endpoint = "/users"; // Endpoint for fetching user data
-                const users = await getAPI(endpoint); // Fetch user data using axiosSystemInstance
+                const endpoint = "/users";
+                const users = await getAPI(endpoint);
 
-                // Check if email and password match any user
                 const user = users.find(user => user.email === email && user.password === password);
 
                 if (user) {
                     Alert.alert("Success", "Login successful");
-                    // Clear form fields
+                    // Store userId in AsyncStorage
+                    await AsyncStorage.setItem('userId', user.id.toString());   // persistent userId
+                    await AsyncStorage.setItem('userName', user.username); // persistent userName
+                    console.log('userId stored in AsyncStorage:', user.id);
+
+                    login(user); // Update context state
+
                     setEmail('');
                     setPassword('');
-                    navigation.navigate('Home Screen'); // Navigate to Home screen after successful login
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Home Screen' }],
+                    });
                 } else {
                     Alert.alert("Error", "Invalid email or password");
                 }
@@ -66,7 +74,7 @@ const LoginScreen = ({ navigation }) => {
                 console.error("Error logging in:", error);
                 Alert.alert("Error", "An error occurred during login");
             } finally {
-                setIsLoading(false); // Hide loading indicator
+                setIsLoading(false);
             }
         }
     };

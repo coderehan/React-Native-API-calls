@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, ScrollView, StyleSheet, Switch, Image, Alert, Text, TouchableOpacity } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
+import { AuthContext } from '../AuthContext';
 
 export const ProfileScreen = ({ navigation }) => {
+  const { user, logout } = useContext(AuthContext); // Use the context
   const [isEnabled, setIsEnabled] = useState(false);
 
   const toggleSwitch = () => {
     setIsEnabled(previousState => !previousState);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Alert.alert(
       'Confirm Logout',
       'Are you sure you want to log out?',
@@ -17,16 +19,21 @@ export const ProfileScreen = ({ navigation }) => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Logout',
-          onPress: () => {
-            // Perform any additional logout logic if needed (e.g., clearing data)
+          onPress: async () => {
+            try {
+              // Perform logout using context
+              logout();
 
-            // Reset the navigation stack and navigate to the Login screen
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{ name: 'Login Screen' }], // Navigate to the Login screen
-              })
-            );
+              // Reset the navigation stack and navigate to the Login screen
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'Login Screen' }], // Ensure 'Login Screen' matches exactly with the one in your StackNavigator
+                })
+              );
+            } catch (error) {
+              console.error('Error during logout:', error);
+            }
           },
         },
       ]
@@ -52,8 +59,8 @@ export const ProfileScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Image source={require('../assets/images/profile_image.png')} style={styles.profileImage} />
         <View style={styles.userInfo}>
-          <Text style={styles.headerText}>Hi Rehan,</Text>
-          <Text style={styles.headerText}>rehan@test.com</Text>
+          <Text style={styles.headerText}>Hi {user ? user.username : 'Guest'},</Text>
+          <Text style={styles.headerText}>{user ? user.email : 'Please log in'}</Text>
         </View>
       </View>
 

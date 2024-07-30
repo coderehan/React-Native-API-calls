@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TouchableOpacity, Alert, Text, ActivityIndicator } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { postAPI } from '../api/ApiService';
 import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
+import { AuthContext } from '../AuthContext';
 
 const SignUpScreen = ({ navigation }) => {
+    const { login } = useContext(AuthContext); // Use the context
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -60,6 +62,10 @@ const SignUpScreen = ({ navigation }) => {
                 if (result) {
                     console.log("User created successfully:", result);
                     Alert.alert("Success", "User created successfully");
+
+                    // Log in the user automatically after sign up
+                    login(result);
+
                     setUsername('');
                     setEmail('');
                     setPassword('');

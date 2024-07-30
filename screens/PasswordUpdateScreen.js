@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { getAPI, putAPI } from '../api/ApiService';
 import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
+import { AuthContext } from '../AuthContext'; // Import AuthContext
 
 const PasswordUpdateScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -15,6 +16,8 @@ const PasswordUpdateScreen = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+
+    const { user, updateUserPassword } = useContext(AuthContext); // Use context
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -76,6 +79,11 @@ const PasswordUpdateScreen = ({ navigation }) => {
                     // Update the user's password
                     const updatedUser = { ...user, password: newPassword };
                     await putAPI(updateEndpoint, updatedUser);
+
+                    // Call context method to update the password in context if needed
+                    if (updateUserPassword) {
+                        updateUserPassword(userId, newPassword);
+                    }
 
                     Alert.alert("Success", "Password updated successfully");
 

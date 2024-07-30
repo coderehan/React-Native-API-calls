@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { postAPI } from '../api/ApiService';
 import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
+import { AuthContext } from '../AuthContext'; // Import AuthContext
 
 export const HomeScreen = ({ navigation }) => {
   const [employeeName, setEmployeeName] = useState('');
@@ -12,6 +13,8 @@ export const HomeScreen = ({ navigation }) => {
   const [jobDesignationError, setJobDesignationError] = useState('');
   const [companyNameError, setCompanyNameError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const { user, logout } = useContext(AuthContext); // Use context
 
   const handlePost = async () => {
     let valid = true;
@@ -70,6 +73,14 @@ export const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={CommonStyles.container}>
+
+      {/* Display logged-in user information */}
+      {user && user.username ? (
+        <Text style={CommonStyles.userInfoText}>Welcome, {user.username}!</Text>
+      ) : (
+        <Text style={CommonStyles.userInfoText}>Welcome, Guest!</Text>
+      )}
+
       <Text style={CommonStyles.header}>POST Request API Call</Text>
 
       <CustomTextInput
@@ -106,5 +117,3 @@ export const HomeScreen = ({ navigation }) => {
     </View>
   );
 };
-
-
