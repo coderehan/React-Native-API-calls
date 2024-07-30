@@ -55,12 +55,13 @@ const LoginScreen = ({ navigation }) => {
 
                 if (user) {
                     Alert.alert("Success", "Login successful");
-                    // Store userId in AsyncStorage
-                    await AsyncStorage.setItem('userId', user.id.toString());   // persistent userId
-                    await AsyncStorage.setItem('userName', user.username); // persistent userName
+
+                    // Store userId and userName in AsyncStorage
+                    await AsyncStorage.setItem('userId', user.id.toString());
+                    await AsyncStorage.setItem('userName', user.username);
                     console.log('userId stored in AsyncStorage:', user.id);
 
-                    login(user); // Call the login function with user data
+                    login(user); // Update user state through context
 
                     setEmail('');
                     setPassword('');

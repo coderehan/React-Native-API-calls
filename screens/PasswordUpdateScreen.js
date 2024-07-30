@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useReducer, useContext } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { getAPI, putAPI } from '../api/ApiService';
@@ -6,18 +6,11 @@ import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
 import { AuthContext } from '../AuthContext'; // Import AuthContext
 import CustomButton from '../styles/CustomButton';
+import { initialState, reducer } from '../reducer/PasswordUpdateReducer';
+
 
 const PasswordUpdateScreen = ({ navigation }) => {
-    const [email, setEmail] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [newPasswordError, setNewPasswordError] = useState('');
-    const [confirmNewPasswordError, setConfirmNewPasswordError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
-
+    const [state, dispatch] = useReducer(reducer, initialState);
     const { user, updateUserPassword } = useContext(AuthContext); // Use context
 
     const validateEmail = (email) => {
@@ -29,69 +22,67 @@ const PasswordUpdateScreen = ({ navigation }) => {
         let valid = true;
 
         // Reset error messages
-        setEmailError('');
-        setNewPasswordError('');
-        setConfirmNewPasswordError('');
+        dispatch({ type: 'SET_EMAIL_ERROR', payload: '' });
+        dispatch({ type: 'SET_NEW_PASSWORD_ERROR', payload: '' });
+        dispatch({ type: 'SET_CONFIRM_NEW_PASSWORD_ERROR', payload: '' });
 
         // Validate email
-        if (email.trim().length === 0) {
-            setEmailError('Email is required');
+        if (state.email.trim().length === 0) {
+            dispatch({ type: 'SET_EMAIL_ERROR', payload: 'Email is required' });
             valid = false;
-        } else if (!validateEmail(email)) {
-            setEmailError('Please enter a valid email');
+        } else if (!validateEmail(state.email)) {
+            dispatch({ type: 'SET_EMAIL_ERROR', payload: 'Please enter a valid email' });
             valid = false;
         }
 
         // Validate new password
-        if (newPassword.trim().length === 0) {
-            setNewPasswordError('New password is required');
+        if (state.newPassword.trim().length === 0) {
+            dispatch({ type: 'SET_NEW_PASSWORD_ERROR', payload: 'New password is required' });
             valid = false;
-        } else if (newPassword.trim().length < 6) {
-            setNewPasswordError('New password must have at least 6 characters');
+        } else if (state.newPassword.trim().length < 6) {
+            dispatch({ type: 'SET_NEW_PASSWORD_ERROR', payload: 'New password must have at least 6 characters' });
             valid = false;
         }
 
         // Validate confirm new password
-        if (confirmNewPassword.trim().length === 0) {
-            setConfirmNewPasswordError('Confirm new password is required');
+        if (state.confirmNewPassword.trim().length === 0) {
+            dispatch({ type: 'SET_CONFIRM_NEW_PASSWORD_ERROR', payload: 'Confirm new password is required' });
             valid = false;
-        } else if (confirmNewPassword.trim().length < 6) {
-            setConfirmNewPasswordError('Confirm new password must have at least 6 characters');
+        } else if (state.confirmNewPassword.trim().length < 6) {
+            dispatch({ type: 'SET_CONFIRM_NEW_PASSWORD_ERROR', payload: 'Confirm new password must have at least 6 characters' });
             valid = false;
-        } else if (newPassword !== confirmNewPassword) {
-            setNewPasswordError('Both new password and confirm new password should match');
+        } else if (state.newPassword !== state.confirmNewPassword) {
+            dispatch({ type: 'SET_NEW_PASSWORD_ERROR', payload: 'Both new password and confirm new password should match' });
             valid = false;
         }
 
         if (valid) {
             try {
-                setIsLoading(true); // Show loading indicator
+                dispatch({ type: 'SET_LOADING', payload: true }); // Show loading indicator
 
                 const endpoint = "/users"; // Endpoint for fetching user data
                 const users = await getAPI(endpoint); // Fetch user data
 
                 // Find the user by email
-                const user = users.find(user => user.email === email);
+                const user = users.find(user => user.email === state.email);
 
                 if (user) {
                     const userId = user.id;
                     const updateEndpoint = `/users/${userId}`; // Endpoint for updating user data
 
                     // Update the user's password
-                    const updatedUser = { ...user, password: newPassword };
+                    const updatedUser = { ...user, password: state.newPassword };
                     await putAPI(updateEndpoint, updatedUser);
 
                     // Call context method to update the password in context if needed
                     if (updateUserPassword) {
-                        updateUserPassword(userId, newPassword);
+                        updateUserPassword(userId, state.newPassword);
                     }
 
                     Alert.alert("Success", "Password updated successfully");
 
                     // Clear form fields
-                    setEmail('');
-                    setNewPassword('');
-                    setConfirmNewPassword('');
+                    dispatch({ type: 'CLEAR_FORM' });
                     navigation.navigate('Login Screen'); // Navigate to Login Screen after successful password update
                 } else {
                     Alert.alert("Error", "Email not found");
@@ -100,7 +91,7 @@ const PasswordUpdateScreen = ({ navigation }) => {
                 console.error("Error updating password:", error);
                 Alert.alert("Error", "An error occurred while updating password");
             } finally {
-                setIsLoading(false); // Hide loading indicator
+                dispatch({ type: 'SET_LOADING', payload: false }); // Hide loading indicator
             }
         }
     };
@@ -112,41 +103,41 @@ const PasswordUpdateScreen = ({ navigation }) => {
             <CustomTextInput
                 iconName="envelope"
                 placeholder="Email ID"
-                value={email}
-                onChangeText={setEmail}
+                value={state.email}
+                onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
                 keyboardType="email-address"
             />
-            {emailError ? <Text style={CommonStyles.errorText}>{emailError}</Text> : null}
+            {state.emailError ? <Text style={CommonStyles.errorText}>{state.emailError}</Text> : null}
 
             <CustomTextInput
                 iconName="lock"
                 placeholder="New Password"
-                value={newPassword}
-                onChangeText={setNewPassword}
-                secureTextEntry={!showNewPassword}
+                value={state.newPassword}
+                onChangeText={(text) => dispatch({ type: 'SET_NEW_PASSWORD', payload: text })}
+                secureTextEntry={!state.showNewPassword}
                 rightIcon={
-                    <TouchableOpacity onPress={() => setShowNewPassword(prev => !prev)} style={CommonStyles.eyeIcon}>
-                        <FontAwesome5 name={showNewPassword ? "eye-slash" : "eye"} size={20} color="black" />
+                    <TouchableOpacity onPress={() => dispatch({ type: 'TOGGLE_SHOW_NEW_PASSWORD' })} style={CommonStyles.eyeIcon}>
+                        <FontAwesome5 name={state.showNewPassword ? "eye-slash" : "eye"} size={20} color="black" />
                     </TouchableOpacity>
                 }
             />
-            {newPasswordError ? <Text style={CommonStyles.errorText}>{newPasswordError}</Text> : null}
+            {state.newPasswordError ? <Text style={CommonStyles.errorText}>{state.newPasswordError}</Text> : null}
 
             <CustomTextInput
                 iconName="lock"
                 placeholder="Confirm New Password"
-                value={confirmNewPassword}
-                onChangeText={setConfirmNewPassword}
-                secureTextEntry={!showConfirmNewPassword}
+                value={state.confirmNewPassword}
+                onChangeText={(text) => dispatch({ type: 'SET_CONFIRM_NEW_PASSWORD', payload: text })}
+                secureTextEntry={!state.showConfirmNewPassword}
                 rightIcon={
-                    <TouchableOpacity onPress={() => setShowConfirmNewPassword(prev => !prev)} style={CommonStyles.eyeIcon}>
-                        <FontAwesome5 name={showConfirmNewPassword ? "eye-slash" : "eye"} size={20} color="black" />
+                    <TouchableOpacity onPress={() => dispatch({ type: 'TOGGLE_SHOW_CONFIRM_NEW_PASSWORD' })} style={CommonStyles.eyeIcon}>
+                        <FontAwesome5 name={state.showConfirmNewPassword ? "eye-slash" : "eye"} size={20} color="black" />
                     </TouchableOpacity>
                 }
             />
-            {confirmNewPasswordError ? <Text style={CommonStyles.errorText}>{confirmNewPasswordError}</Text> : null}
+            {state.confirmNewPasswordError ? <Text style={CommonStyles.errorText}>{state.confirmNewPasswordError}</Text> : null}
 
-            {isLoading ? (
+            {state.isLoading ? (
                 <ActivityIndicator size="large" color="#007BFF" />
             ) : (
                 <CustomButton onPress={handleUpdatePassword} title="Update Password" />

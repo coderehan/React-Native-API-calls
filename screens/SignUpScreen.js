@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useReducer, useContext } from 'react';
 import { View, TouchableOpacity, Alert, Text, ActivityIndicator } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { postAPI } from '../api/ApiService';
@@ -6,17 +6,22 @@ import CommonStyles from '../styles/CommonStyles';
 import CustomTextInput from '../styles/CustomTextInput';
 import { AuthContext } from '../AuthContext';
 import CustomButton from '../styles/CustomButton';
+import { initialState, reducer } from '../reducer/SignUpReducer'; // Import reducer and initial state
 
 const SignUpScreen = ({ navigation }) => {
     const { login } = useContext(AuthContext); // Use the context
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [usernameError, setUsernameError] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [state, dispatch] = useReducer(reducer, initialState); // Initialize useReducer
+
+    const {
+        username,
+        email,
+        password,
+        usernameError,
+        emailError,
+        passwordError,
+        isLoading,
+        showPassword
+    } = state;
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -26,34 +31,34 @@ const SignUpScreen = ({ navigation }) => {
     const handleSignUp = async () => {
         let valid = true;
 
-        setUsernameError('');
-        setEmailError('');
-        setPasswordError('');
+        dispatch({ type: 'SET_USERNAME_ERROR', payload: '' });
+        dispatch({ type: 'SET_EMAIL_ERROR', payload: '' });
+        dispatch({ type: 'SET_PASSWORD_ERROR', payload: '' });
 
         if (username.trim().length === 0) {
-            setUsernameError('Username is required');
+            dispatch({ type: 'SET_USERNAME_ERROR', payload: 'Username is required' });
             valid = false;
         }
 
         if (email.trim().length === 0) {
-            setEmailError('Email is required');
+            dispatch({ type: 'SET_EMAIL_ERROR', payload: 'Email is required' });
             valid = false;
         } else if (!validateEmail(email)) {
-            setEmailError('Please enter a valid email');
+            dispatch({ type: 'SET_EMAIL_ERROR', payload: 'Please enter a valid email' });
             valid = false;
         }
 
         if (password.trim().length === 0) {
-            setPasswordError('Password is required');
+            dispatch({ type: 'SET_PASSWORD_ERROR', payload: 'Password is required' });
             valid = false;
         } else if (password.trim().length < 6) {
-            setPasswordError('Password must have at least 6 characters');
+            dispatch({ type: 'SET_PASSWORD_ERROR', payload: 'Password must have at least 6 characters' });
             valid = false;
         }
 
         if (valid) {
             try {
-                setIsLoading(true);
+                dispatch({ type: 'SET_LOADING', payload: true });
 
                 const endpoint = "/users";
                 const body = { username, email, password };
@@ -64,11 +69,10 @@ const SignUpScreen = ({ navigation }) => {
                     console.log("User created successfully:", result);
                     Alert.alert("Success", "User created successfully");
 
-                    login(result);
+                    login(result); // Use login function from context
 
-                    setUsername('');
-                    setEmail('');
-                    setPassword('');
+                    // Clear the form data once data is submitted successfully
+                    dispatch({ type: 'CLEAR_FORM' });
                     navigation.navigate('Login Screen');
                 } else {
                     console.warn("Failed to create user:", result);
@@ -78,7 +82,7 @@ const SignUpScreen = ({ navigation }) => {
                 console.error("Error creating user:", error);
                 Alert.alert("Error", "An error occurred during signup");
             } finally {
-                setIsLoading(false);
+                dispatch({ type: 'SET_LOADING', payload: false });
             }
         }
     };
@@ -91,7 +95,7 @@ const SignUpScreen = ({ navigation }) => {
                 iconName="user"
                 placeholder="Username"
                 value={username}
-                onChangeText={setUsername}
+                onChangeText={(text) => dispatch({ type: 'SET_USERNAME', payload: text })}
             />
             {usernameError ? <Text style={CommonStyles.errorText}>{usernameError}</Text> : null}
 
@@ -99,7 +103,7 @@ const SignUpScreen = ({ navigation }) => {
                 iconName="envelope"
                 placeholder="Email ID"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
                 keyboardType="email-address"
             />
             {emailError ? <Text style={CommonStyles.errorText}>{emailError}</Text> : null}
@@ -108,10 +112,10 @@ const SignUpScreen = ({ navigation }) => {
                 iconName="lock"
                 placeholder="Password"
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={(text) => dispatch({ type: 'SET_PASSWORD', payload: text })}
                 secureTextEntry={!showPassword}
                 rightIcon={
-                    <TouchableOpacity onPress={() => setShowPassword(prev => !prev)} style={CommonStyles.eyeIcon}>
+                    <TouchableOpacity onPress={() => dispatch({ type: 'TOGGLE_SHOW_PASSWORD' })} style={CommonStyles.eyeIcon}>
                         <FontAwesome5 name={showPassword ? "eye-slash" : "eye"} size={20} color="black" />
                     </TouchableOpacity>
                 }
